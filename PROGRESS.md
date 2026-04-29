@@ -22,15 +22,15 @@ We follow a strict **Theory -> Deep-Dive -> Implementation** loop:
 - [x] **Lesson 2 & 3: Web Frameworks & Entry Point.** Selected Fiber for its performance and middleware-centric design.
 - [x] **Lesson 4: Concurrency & Graceful Shutdown.** Deep-dived into Goroutines, Channels, and OS signal handling. Implemented `main.go` with a `/health` endpoint and signal-based shutdown.
 
-### Phase 2: The Gateway "Fast Path" (IN PROGRESS)
-- [ ] **Lesson 5: Idempotency (Next).** Redis-based check to prevent double-charging.
-- [ ] **Lesson 6: The Request Context & Error Handling.** How to pass data through middleware and handle financial errors.
-- [ ] **Lesson 7: Integration with Mock Providers.** Simulating Stripe/Adyen/PayPal.
+### Phase 2: The Gateway "Fast Path" (COMPLETED)
+- [x] **Lesson 5: Idempotency.** Redis-based check with atomic locking (`SetNX`) to prevent double-charging.
+- [x] **Lesson 6: The Circuit Breaker Pattern.** Implemented `gobreaker` to handle provider failures and enable "Fail-Fast" logic.
+- [x] **Lesson 7: Mock Providers & Chaos Injection.** Built FastAPI-based mocks for Stripe/Adyen/PayPal with deterministic failure modes.
+- [x] **Lesson 8: Infrastructure as Code.** Containerized the stack with Docker Compose (Redis, Postgres, Redpanda, Mocks).
 
-### Phase 3: The AI Recovery "Slow Path"
-- [ ] **Lesson 8: Event-Driven Architecture.** Kafka/Redis PubSub.
-- [ ] **Lesson 9: LangGraph Orchestrator.** Supervisor/Worker pattern.
-- [ ] **Lesson 10: State Persistence.** Postgres checkpointer.
+### Phase 3: The AI Recovery "Slow Path" (IN PROGRESS)
+- [ ] **Lesson 9: Event-Driven Architecture (Next).** Decoupling failure handling with Kafka/Redpanda.
+- [ ] **Lesson 10: Supervisor Agent Logic.** Designing the LangGraph orchestrator.
 
 ---
 

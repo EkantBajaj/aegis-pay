@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/EkantBajaj/aegis-pay/internal/idempotency"
+	"github.com/EkantBajaj/aegis-pay/internal/routing"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/joho/godotenv"
@@ -22,13 +23,20 @@ func main() {
 	// 1. Configuration
 	redisAddr := os.Getenv("REDIS_ADDR")
 	if redisAddr == "" {
-		redisAddr = "localhost:6379" // Default for local dev
+		redisAddr = "localhost:6379"
 	}
 
-	// 2. Initialize Dependencies (Dependency Injection)
-	// We inject the Redis client into the Idempotency Middleware
+	stripeURL := os.Getenv("STRIPE_URL")
+	if stripeURL == "" {
+		stripeURL = "http://localhost:8081/stripe/v1/charges"
+	}
+
+	// 2. Initialize Dependencies
 	idemClient := idempotency.NewClient(redisAddr)
 	idemMiddleware := idempotency.NewMiddleware(idemClient)
+
+	// Initialize the Routing Layer (Stripe Client with Circuit Breaker)
+	stripeClient := routing.NewProviderClient("Stripe-Main", stripeURL)
 
 	// 3. Initialize Fiber App
 	app := fiber.New(fiber.Config{
@@ -36,12 +44,9 @@ func main() {
 		WriteTimeout: 10 * time.Second,
 	})
 
-	// Add standard logger to see requests in terminal
 	app.Use(logger.New())
 
 	// 4. Routes
-	
-	// Health Check (Public, No Idempotency)
 	app.Get("/health", func(c *fiber.Ctx) error {
 		return c.Status(200).JSON(fiber.Map{
 			"status": "healthy",
@@ -49,19 +54,25 @@ func main() {
 		})
 	})
 
-	// Charge Endpoint (Protected by Idempotency Middleware)
-	// Every request here MUST have an 'Idempotency-Key' header
 	app.Post("/charge", idemMiddleware, func(c *fiber.Ctx) error {
-		log.Println("--- Logic: Processing payment in Handler ---")
-		
-		// Simulate a provider call (Stripe/Adyen) taking 2 seconds
-		time.Sleep(2 * time.Second)
+		var req routing.ChargeRequest
+		if err := c.BodyParser(&req); err != nil {
+			return c.Status(400).JSON(fiber.Map{"error": "invalid request body"})
+		}
 
-		return c.Status(200).JSON(fiber.Map{
-			"status": "success",
-			"message": "Payment processed successfully",
-			"transaction_id": "tx_" + time.Now().Format("20060102150405"),
-		})
+		log.Printf("--- Gateway: Routing charge for user %s to Stripe ---", req.UserID)
+		
+		// Attempt charge through the client (protected by circuit breaker)
+		resp, err := stripeClient.Charge(c.Context(), req)
+		if err != nil {
+			log.Printf("--- FAILURE: Stripe call failed: %v ---", err)
+			return c.Status(502).JSON(fiber.Map{
+				"error": "payment_failed",
+				"detail": err.Error(),
+			})
+		}
+
+		return c.Status(200).JSON(resp)
 	})
 
 	// 5. Server Lifecycle & Graceful Shutdown
