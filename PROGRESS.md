@@ -29,8 +29,9 @@ We follow a strict **Theory -> Deep-Dive -> Implementation** loop:
 - [x] **Lesson 8: Infrastructure as Code.** Containerized the stack with Docker Compose (Redis, Postgres, Redpanda, Mocks).
 
 ### Phase 3: The AI Recovery "Slow Path" (IN PROGRESS)
-- [ ] **Lesson 9: Event-Driven Architecture (Next).** Decoupling failure handling with Kafka/Redpanda.
-- [ ] **Lesson 10: Supervisor Agent Logic.** Designing the LangGraph orchestrator.
+- [x] **Lesson 9 & 10: Event-Driven Architecture.** Implemented Kafka Producer in Go with "Fire and Forget" `202 Accepted` pattern. Manually initialized Redpanda topics.
+- [ ] **Lesson 11: LangGraph Fundamentals (Next).** Building the stateful recovery graph.
+- [ ] **Lesson 12: Supervisor Agent Pattern.** Implementing the PM-specialist worker architecture.
 
 ---
 
