@@ -1,0 +1,16 @@
+2026/04/30 12:21:23 Aegis-Pay Gateway starting on :8080
+
+ ┌───────────────────────────────────────────────────┐ 
+ │                  Fiber v2.52.13                   │ 
+ │               http://127.0.0.1:8080               │ 
+ │       (bound on host 0.0.0.0 and port 8080)       │ 
+ │                                                   │ 
+ │ Handlers ............. 5  Processes ........... 1 │ 
+ │ Prefork ....... Disabled  PID ............. 53551 │ 
+ └───────────────────────────────────────────────────┘ 
+
+2026/04/30 12:21:28 --- Gateway: Routing charge for user vip_user_88 to Stripe ---
+2026/04/30 12:21:33 --- FAST PATH FAILED: http call failed: Post "http://localhost:8081/stripe/v1/charges": context deadline exceeded (Client.Timeout exceeded while awaiting headers). Triggering Slow Path (AI Recovery) ---
+2026/04/30 12:21:34 --- KAFKA: Published failed transaction event for recovery ---
+12:21:28 | 202 |  6.021499125s | 127.0.0.1 | POST | /charge | -
+2026/04/30 12:27:03 Shutting down Aegis-Pay Gateway...

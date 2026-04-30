@@ -1,0 +1,21 @@
+# Environment variables
+.env
+*.env
+
+# Go binaries
+bin/
+gateway
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# Docker
+.docker/
+
+# IDEs
+.vscode/
+.idea/

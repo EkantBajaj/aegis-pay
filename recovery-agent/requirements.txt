@@ -1,0 +1,7 @@
+langgraph
+langchain-google-genai
+confluent-kafka
+python-dotenv
+pydantic
+langgraph-checkpoint-postgres
+psycopg[binary]
